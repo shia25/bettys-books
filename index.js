@@ -53,7 +53,7 @@ app.use('/books', booksRoutes)
 // Start the web app listening
 app.listen(port, () => console.log(`Node app listening on port ${port}!`))
 
-
+/*
 //form submission for adding a new book
 app.post('/books/add', (req, res) => {
     //res parameters
@@ -90,4 +90,4 @@ app.get('/books', (req, res) => {
             res.render('booksList', { books: results });  // Renders 'booksList.ejs' with books data
         }
     });
-});
+});*/

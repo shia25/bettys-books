@@ -53,41 +53,6 @@ app.use('/books', booksRoutes)
 // Start the web app listening
 app.listen(port, () => console.log(`Node app listening on port ${port}!`))
 
-/*
-//form submission for adding a new book
-app.post('/books/add', (req, res) => {
-    //res parameters
-    const { name, price } = req.body;
-
-    if (name && price) {
-        // const prevents reassignment. If the value is primitive (like a string, number, boolean),
-        // the actual value can't be changed or replaced once declared.
-
-        const query = 'INSERT INTO books (name, price) VALUES (?, ?)';//query itself
-        db.query(query, [name, price], (err, result) => {//query pluggled into js
-            if (err) {
-                res.send('Error saving book to the database');
-                console.log(err);
-            } else {
-                res.redirect('/books');  // Redirects to book list after adding a book
-            }
-        });
-    } else {
-        res.send('Book name or price is missing!');
-    }
-});
 
 
-// Display the list of all books
-app.get('/books', (req, res) => {
-    const query = 'SELECT * FROM books';
-    db.query(query, (err, results) => {
-        if (err) {
-            //error handler 
-            res.send('Error retrieving books from the database');
-            console.log(err);
-        } else {
-            res.render('booksList', { books: results });  // Renders 'booksList.ejs' with books data
-        }
-    });
-});*/
+// just checking if can push to github

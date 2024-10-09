@@ -14,5 +14,13 @@
     "express": "^4.17.1",
     "mysql2": "^3.11.2",
     "pug": "^3.0.2"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shia25/bettys-books.git"
+  },
+  "bugs": {
+    "url": "https://github.com/shia25/bettys-books/issues"
+  },
+  "homepage": "https://github.com/shia25/bettys-books#readme"
 }

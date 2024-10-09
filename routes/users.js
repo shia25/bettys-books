@@ -6,10 +6,6 @@ const router = express.Router()
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
-//user password input
-const plainPassword = req.body.password;
-
-
 // GET route to show the registration form
 router.get('/register', function (req, res, next) {
     res.render('register.ejs')                                                               
@@ -34,8 +30,6 @@ router.post('/registered', function (req, res, next) {
         res.send(`Hello ${first} ${last}, you are now registered! We will send an email to you at ${email}. Your hashed password is: ${hashedPassword}`);
     });
 });
-
-
 
 
 // Export the router object so index.js can access it

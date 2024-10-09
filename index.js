@@ -55,9 +55,4 @@ app.listen(port, () => console.log(`Node app listening on port ${port}!`))
 
 
 
-// just checking if can push to github
-
-// just got it cloned  in the vm
-
-
-// vm setup complete
+// removed stats checking comments

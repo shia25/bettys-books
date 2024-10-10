@@ -42,5 +42,25 @@ router.post('/registered', function (req, res, next) {
 });
 
 
+
+// Route to get a list of all users (excluding the password)
+router.get('/users/list', function (req, res, next) {
+
+    // SQL query to select all users details except the hashedPassword 
+    let sqlquery = "SELECT username, first_name, last_name, email FROM users";
+    
+    // Execute the query
+    db.query(sqlquery, (err, result) => {
+        if (err) {
+            // Handle the error if query fails
+            return res.status(500).send("Error fetching users from the database");
+        }
+
+        // Render the result in the 'users_list.ejs' view file
+        res.render("users_list.ejs", { userList: result });
+    });
+});
+
+
 // Export the router object so index.js can access it
 module.exports = router

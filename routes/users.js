@@ -44,7 +44,7 @@ router.post('/registered', function (req, res, next) {
 
 
 // Route to get a list of all users (excluding the password)
-router.get('/users/list', function (req, res, next) {
+router.get('/users_list', function (req, res, next) {
 
     // SQL query to select all users details except the hashedPassword 
     let sqlquery = "SELECT username, first_name, last_name, email FROM users";

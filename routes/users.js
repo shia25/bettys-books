@@ -61,6 +61,45 @@ router.get('/users_list', function (req, res, next) {
     });
 });
 
+// GET route to show the login form
+router.get('/login', function (req, res, next) {
+    res.render('login.ejs')                                                               
+})    
+
+// POST route for handling login
+router.post('/loggedin', function (req, res, next) {
+    const username = req.body.username;
+    const plainPassword = req.body.password;
+
+    // Query to fetch the user based on the username
+    const sqlquery = 'SELECT * FROM users WHERE username = ?';
+    db.query(sqlquery, [username], (err, result) => {
+        if (err || result.length === 0) {
+            // If there is an error or no user found, handle it
+            return res.status(400).send("Invalid username or password");
+        }
+
+        const user = result[0];  // Fetch the user object from the query result
+
+        // Now compare the plain password with the stored hashed password
+        bcrypt.compare(plainPassword, user.hashedPassword, (err, match) => {
+            if (err) {
+                // Handle bcrypt error
+                return res.status(500).send("Error comparing passwords");
+            }
+            if (match) {
+                // Passwords match, login successful
+                res.send(`Welcome, ${user.first_name}!`);
+            } else {
+                // Passwords don't match, login failed
+                res.status(400).send("Invalid username or password");
+            }
+        });
+    });
+});
+
+
+
 
 // Export the router object so index.js can access it
 module.exports = router

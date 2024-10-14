@@ -6,6 +6,16 @@ const router = express.Router()
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
+
+// redirect login if user is not in session
+const redirectLogin = (req, res, next) => {
+    if (!req.session.userId ) {
+      res.redirect('./login') // redirect to the login page
+    } else { 
+        next (); // move to the next middleware function
+    } 
+}
+
 // GET route to show the registration form
 router.get('/register', function (req, res, next) {
     res.render('register.ejs')                                                               
@@ -70,6 +80,7 @@ router.get('/login', function (req, res, next) {
 router.post('/loggedin', function (req, res, next) {
     const username = req.body.username;
     const plainPassword = req.body.password;
+    req.session.userId = req.body.username;
 
     // Query to fetch the user based on the username
     const sqlquery = 'SELECT * FROM users WHERE username = ?';
@@ -97,9 +108,6 @@ router.post('/loggedin', function (req, res, next) {
         });
     });
 });
-
-
-
 
 // Export the router object so index.js can access it
 module.exports = router

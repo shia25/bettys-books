@@ -5,6 +5,9 @@ var ejs = require('ejs')
 //Import mysql module
 var mysql = require('mysql2')
 
+//Import express-session module
+var session = require ('express-session')
+
 
 // Create the express application object
 const app = express()
@@ -34,6 +37,16 @@ db.connect((err) => {
     console.log('Connected to database')
 })
 global.db = db
+
+// Create a session
+app.use(session({
+    secret: 'somerandomstuff',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        expires: 600000
+    }
+}))
 
 // Define our application-specific data
 app.locals.shopData = {shopName: "Bettys Books"}

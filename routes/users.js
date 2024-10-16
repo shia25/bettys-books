@@ -9,12 +9,16 @@ const saltRounds = 10;
 
 // redirect login if user is not in session
 const redirectLogin = (req, res, next) => {
+    console.log('RedirectLogin middleware is executed'); // Check if middleware is being executed
     if (!req.session.userId ) {
       res.redirect('./login') // redirect to the login page
     } else { 
         next (); // move to the next middleware function
     } 
 }
+
+console.log('redirectLogin middleware is defined and ready for use.');
+
 
 // GET route to show the registration form
 router.get('/register', function (req, res, next) {
@@ -108,6 +112,8 @@ router.post('/loggedin', function (req, res, next) {
         });
     });
 });
+
+console.log(redirectLogin); // This should not log 'undefined'
 
 // Export the router object so index.js can access it
 module.exports = router

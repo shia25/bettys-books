@@ -6,16 +6,9 @@ const router = express.Router()
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
+const { redirectLogin } = require('../index'); // Import redirectLogin
 
-// redirect login if user is not in session
-const redirectLogin = (req, res, next) => {
-    console.log('RedirectLogin middleware is executed'); // Check if middleware is being executed
-    if (!req.session.userId ) {
-      res.redirect('./login') // redirect to the login page
-    } else { 
-        next (); // move to the next middleware function
-    } 
-}
+
 
 console.log('redirectLogin middleware is defined and ready for use.');
 
@@ -38,7 +31,7 @@ router.post('/registered', function (req, res, next) {
    // Hash the password before storing it
    bcrypt.hash(plainPassword, saltRounds, function(err, hashedPassword) {
     if (err) {
-        return res.status(500).send("Error hashing the password");
+        res.status(500).send("Error hashing the password");
     }
 
         // Database logic to store user details
@@ -48,7 +41,7 @@ router.post('/registered', function (req, res, next) {
         db.query(sqlquery, values, (error, results) => {
                 if (error) {
                     console.error("Database error:", error); // Log the actual error
-                    return res.status(500).send("Error saving user to the database");
+                    res.status(500).send("Error saving user to the database");
                 }
                 res.send(`Hello ${first} ${last}, you are now registered! We will send an email to you at ${email}. Your hashed password is: ${hashedPassword}`);
         });
@@ -58,7 +51,7 @@ router.post('/registered', function (req, res, next) {
 
 
 // Route to get a list of all users (excluding the password)
-router.get('/users_list', function (req, res, next) {
+router.get('/users_list', redirectLogin,function (req, res, next) {
 
     // SQL query to select all users details except the hashedPassword 
     let sqlquery = "SELECT username, first_name, last_name, email FROM users";
@@ -67,7 +60,7 @@ router.get('/users_list', function (req, res, next) {
     db.query(sqlquery, (err, result) => {
         if (err) {
             // Handle the error if query fails
-            return res.status(500).send("Error fetching users from the database");
+            res.status(500).send("Error fetching users from the database");
         }
 
         // Render the result in the 'users_list.ejs' view file
@@ -91,7 +84,7 @@ router.post('/loggedin', function (req, res, next) {
     db.query(sqlquery, [username], (err, result) => {
         if (err || result.length === 0) {
             // If there is an error or no user found, handle it
-            return res.status(400).send("Invalid username or password");
+            res.status(400).send("Invalid username or password");
         }
 
         const user = result[0];  // Fetch the user object from the query result
@@ -100,7 +93,7 @@ router.post('/loggedin', function (req, res, next) {
         bcrypt.compare(plainPassword, user.hashedPassword, (err, match) => {
             if (err) {
                 // Handle bcrypt error
-                return res.status(500).send("Error comparing passwords");
+                res.status(500).send("Error comparing passwords");
             }
             if (match) {
                 // Passwords match, login successful
@@ -113,7 +106,5 @@ router.post('/loggedin', function (req, res, next) {
     });
 });
 
-console.log(redirectLogin); // This should not log 'undefined'
-
 // Export the router object so index.js can access it
-module.exports = router
+module.exports = router;

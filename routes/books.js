@@ -1,9 +1,20 @@
 const express = require("express")
 const router = express.Router()
 
+// redirect login if user is not in session
+const redirectLogin = (req, res, next) => {
+    console.log('RedirectLogin middleware is executed'); // Check if middleware is being executed
+    if (!req.session.userId ) {
+      res.redirect('./login') // redirect to the login page
+    } else { 
+        next (); // move to the next middleware function
+    } 
+}
+
 router.get('/search',function(req, res, next){
     res.render("search.ejs")
 })
+
 
 router.get('/search_result', function (req, res, next) {
     // Search the database
@@ -18,7 +29,7 @@ router.get('/search_result', function (req, res, next) {
 })
 
 
-router.get('/list', function(req, res, next) {
+router.get('/list', redirectLogin, function (req, res, next) {
     let sqlquery = "SELECT * FROM books" // query database to get all the books
     // execute sql query
     db.query(sqlquery, (err, result) => {
@@ -29,7 +40,7 @@ router.get('/list', function(req, res, next) {
      })
 })
 
-router.get('/addbook', function (req, res, next) {
+router.get('/addbook',redirectLogin, function (req, res, next) {
     res.render('addbook.ejs')
 })
 

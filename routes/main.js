@@ -11,6 +11,16 @@ router.get('/about',function(req, res, next){
     res.render('about.ejs')
 })
 
+// redirect login if user is not in session
+/*const redirectLogin = (req, res, next) => {
+    console.log('RedirectLogin middleware is executed'); // Check if middleware is being executed
+    if (!req.session.userId ) {
+      res.redirect('./login') // redirect to the login page
+    } else { 
+        next (); // move to the next middleware function
+    } 
+}
+
 //logout
 router.get('/logout', redirectLogin, (req,res) => {
     req.session.destroy(err => {
@@ -19,7 +29,7 @@ router.get('/logout', redirectLogin, (req,res) => {
     }
     res.send('you are now logged out. <a href='+'./'+'>Home</a>');
     })
-})
+})*/
 
 // Export the router object so index.js can access it
 module.exports = router

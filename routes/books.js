@@ -5,7 +5,7 @@ const router = express.Router()
 const redirectLogin = (req, res, next) => {
     console.log('RedirectLogin middleware is executed'); // Check if middleware is being executed
     if (!req.session.userId ) {
-      res.redirect('./login') // redirect to the login page
+      res.redirect('/users/login') // redirect to the login page
     } else { 
         next (); // move to the next middleware function
     } 
@@ -40,7 +40,7 @@ router.get('/list', redirectLogin, function (req, res, next) {
      })
 })
 
-router.get('/addbook',redirectLogin, function (req, res, next) {
+router.get('/addbook', redirectLogin, function (req, res, next) {
     res.render('addbook.ejs')
 })
 
@@ -58,7 +58,7 @@ router.post('/bookadded', function (req, res, next) {
     })
 }) 
 
-router.get('/bargainbooks', function(req, res, next) {
+router.get('/bargainbooks', redirectLogin, function(req, res, next) {
     let sqlquery = "SELECT * FROM books WHERE price < 20"
     db.query(sqlquery, (err, result) => {
         if (err) {
@@ -67,12 +67,6 @@ router.get('/bargainbooks', function(req, res, next) {
         res.render("bargains.ejs", {availableBooks:result})
     })
 }) 
-
-// Error-handling middleware
-router.use((err, req, res, next) => {
-    console.error(err); // Log the error for debugging
-    res.status(500).send('An error occurred: ' + err.message); // Send a user-friendly error response
-});
 
 
 // Export the router object so index.js can access it

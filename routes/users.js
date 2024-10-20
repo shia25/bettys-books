@@ -6,9 +6,16 @@ const router = express.Router()
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
-const { redirectLogin } = require('../index'); // Import redirectLogin
 
-
+// redirect login if user is not in session
+const redirectLogin = (req, res, next) => {
+    console.log('RedirectLogin middleware is executed'); // Check if middleware is being executed
+    if (!req.session.userId ) {
+      res.redirect('/users/login') // redirect to the login page
+    } else { 
+        next (); // move to the next middleware function
+    } 
+}
 
 console.log('redirectLogin middleware is defined and ready for use.');
 
@@ -98,6 +105,7 @@ router.post('/loggedin', function (req, res, next) {
             if (match) {
                 // Passwords match, login successful
                 res.send(`Welcome, ${user.first_name}!`);
+                //after login it redirects to the page im trying to navigate
             } else {
                 // Passwords don't match, login failed
                 res.status(400).send("Invalid username or password");

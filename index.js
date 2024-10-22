@@ -53,7 +53,7 @@ app.locals.shopData = {shopName: "Bettys Books"}
 
 // Load the route handlers
 const mainRoutes = require("./routes/main")
-app.use('/main', mainRoutes)
+app.use('/', mainRoutes)
 
 // Load the route handlers for /users
 const usersRoutes = require('./routes/users')

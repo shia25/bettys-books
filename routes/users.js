@@ -1,3 +1,6 @@
+//
+const { check, validationResult } = require('express-validator');
+
 // Create a new router
 const express = require("express")
 const router = express.Router()
@@ -26,7 +29,21 @@ router.get('/register', function (req, res, next) {
 })    
 
 // POST route to handle the registration form submission
-router.post('/registered', function (req, res, next) {
+router.post('/registered',
+     [check('email').isEmail().withMessage('Invalid email format')
+        //helps normalize emails  (  User@Example.com  --> user@example.com)
+        .normalizeEmail(),
+     check('password').isLength({ min: 8 }),
+     check('username')
+        .isAlphanumeric().withMessage('Username must be alphanumeric')
+        .isLength({ min: 3 }).withMessage('Username must be at least 3 characters long')],
+
+     function (req, res, next) {
+    //validation checking is user input is empty
+    const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            res.redirect('./register'); }
+        else { 
 
     // Extracting user details from register form submission
     const plainPassword = req.body.password; 
@@ -53,6 +70,7 @@ router.post('/registered', function (req, res, next) {
                 res.send(`Hello ${first} ${last}, you are now registered! We will send an email to you at ${email}. Your hashed password is: ${hashedPassword}`);
         });
     });
+ }
 });
 
 

@@ -16,6 +16,10 @@ var session = require ('express-session')
 const app = express()
 const port = 8001
 
+const expressSanitizer = require('express-sanitizer');
+
+// Create an input sanitizer
+app.use(expressSanitizer());
 
 
 // Tell Express that we want to use EJS as the templating engine

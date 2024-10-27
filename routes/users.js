@@ -31,19 +31,27 @@ router.get('/register', function (req, res, next) {
 // POST route to handle the registration form submission
 router.post('/registered',
      [check('email').isEmail().withMessage('Invalid email format')
-        //helps normalize emails  (  User@Example.com  --> user@example.com)
+        //helps normalize emails  (User@Example.com  --> user@example.com)
         .normalizeEmail(),
+    //password must 8 character long
      check('password').isLength({ min: 8 }),
      check('username')
+        .trim()         // Trim whitespace
+        .escape()       // Escape special characters to prevent XSS
         .isAlphanumeric().withMessage('Username must be alphanumeric')
         .isLength({ min: 3 }).withMessage('Username must be at least 3 characters long')],
+        check('first').trim().escape(), // Sanitize first name
+        check('last').trim().escape(),   // Sanitize last name
 
      function (req, res, next) {
     //validation checking is user input is empty
     const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            res.redirect('./register'); }
-        else { 
+            //res.redirect('./register');
+            //to better handle returning validation errors
+            res.status(400).json({ errors: errors.array() });
+
+         }else { 
 
     // Extracting user details from register form submission
     const plainPassword = req.body.password; 

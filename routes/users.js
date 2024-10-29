@@ -40,10 +40,10 @@ router.post('/registered',
         .escape()       // Escape special characters to prevent XSS
         .isAlphanumeric().withMessage('Username must be alphanumeric')
         .isLength({ min: 3 }).withMessage('Username must be at least 3 characters long')],
-        check('first').trim().escape(), // Sanitize first name
-        check('last').trim().escape(),   // Sanitize last name
+     check('first').trim().escape(), // Sanitize first name
+     check('last').trim().escape(),   // Sanitize last name
 
-     function (req, res, next) {
+     async (req, res)=> {
     //validation checking is user input is empty
     const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -51,20 +51,15 @@ router.post('/registered',
             //to better handle returning validation errors
             res.status(400).json({ errors: errors.array() });
 
-         }else { 
+         }
 
     // Extracting user details from register form submission
-    const plainPassword = req.body.password; 
-    const username = req.body.username;
-    const first = req.body.first; 
-    const last = req.body.last; 
-    const email = req.body.email; 
+    // making extracting user details for concise
 
-   // Hash the password before storing it
-   bcrypt.hash(plainPassword, saltRounds, function(err, hashedPassword) {
-    if (err) {
-        res.status(500).send("Error hashing the password");
-    }
+    const {password, username, first, last, email} = req.body;
+    //hashed password now will be used only called upon
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
 
         // Database logic to store user details
         const sqlquery = `INSERT INTO users (username, first_name, last_name, email, hashedPassword) VALUES (?,?,?,?,?)`;
@@ -73,12 +68,10 @@ router.post('/registered',
         db.query(sqlquery, values, (error, results) => {
                 if (error) {
                     console.error("Database error:", error); // Log the actual error
-                    res.status(500).send("Error saving user to the database");
+                    return res.status(500).send("Error saving user to the database");
                 }
                 res.send(`Hello ${first} ${last}, you are now registered! We will send an email to you at ${email}. Your hashed password is: ${hashedPassword}`);
         });
-    });
- }
 });
 
 
@@ -93,7 +86,8 @@ router.get('/users_list', redirectLogin,function (req, res, next) {
     db.query(sqlquery, (err, result) => {
         if (err) {
             // Handle the error if query fails
-            res.status(500).send("Error fetching users from the database");
+            console.error("Database error:", err);
+            return res.status(500).send("Error fetching users from the database");
         }
 
         // Render the result in the 'users_list.ejs' view file
@@ -107,36 +101,33 @@ router.get('/login', function (req, res, next) {
 })    
 
 // POST route for handling login
-router.post('/loggedin', function (req, res, next) {
-    const username = req.body.username;
-    const plainPassword = req.body.password;
+router.post('/loggedin', async (req, res) =>{
+    const {username, password} = req.body;
+
     req.session.userId = req.body.username;
 
     // Query to fetch the user based on the username
     const sqlquery = 'SELECT * FROM users WHERE username = ?';
-    db.query(sqlquery, [username], (err, result) => {
+    db.query(sqlquery, [username], async (err, result) => {
         if (err || result.length === 0) {
             // If there is an error or no user found, handle it
             res.status(400).send("Invalid username or password");
         }
 
-        const user = result[0];  // Fetch the user object from the query result
+        const user = result[0];  // store the user object from the query result
 
         // Now compare the plain password with the stored hashed password
-        bcrypt.compare(plainPassword, user.hashedPassword, (err, match) => {
-            if (err) {
-                // Handle bcrypt error
-                res.status(500).send("Error comparing passwords");
-            }
+       const match = await bcrypt.compare(password, user.hashedPassword);
+          
             if (match) {
                 // Passwords match, login successful
                 res.send(`Welcome, ${user.first_name}!`);
-                //after login it redirects to the page im trying to navigate
+                //after login it redirects to the hompage
+               // res.redirect('/')
             } else {
                 // Passwords don't match, login failed
                 res.status(400).send("Invalid username or password");
             }
-        });
     });
 });
 

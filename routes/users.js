@@ -123,7 +123,8 @@ router.post('/loggedin', async (req, res) =>{
                 // Passwords match, login successful
                 res.send(`Welcome, ${user.first_name}!`);
                 //after login it redirects to the hompage
-               // res.redirect('/')
+               // res.redirect('/') 
+               //error caused by 2 res 
             } else {
                 // Passwords don't match, login failed
                 res.status(400).send("Invalid username or password");
